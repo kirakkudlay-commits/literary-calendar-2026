@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="vBg" cx="50%" cy="35%" r="80%">
+      <stop offset="0%" stop-color="#3a2f5a"/>
+      <stop offset="55%" stop-color="#1e1635"/>
+      <stop offset="100%" stop-color="#080510"/>
+    </radialGradient>
+    <linearGradient id="vAcc" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d8d4ee" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#8e88c6" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#vBg)"/>
+
+  <!-- Faint moon -->
+  <circle cx="460" cy="170" r="80" fill="#e8e3ff" opacity="0.10"/>
+  <circle cx="460" cy="170" r="60" fill="#e8e3ff" opacity="0.18"/>
+
+  <!-- Stylised silhouette: head + shoulders + flowing hair/beard -->
+  <g transform="translate(300, 380)" fill="#0a0610" stroke="#8e88c6" stroke-width="0.6" opacity="0.95">
+    <!-- shoulders -->
+    <path d="M -180 240 C -180 130, -110 110, -80 100 L 80 100 C 110 110, 180 130, 180 240 Z" />
+    <!-- neck -->
+    <rect x="-30" y="60" width="60" height="50" rx="6"/>
+    <!-- head -->
+    <ellipse cx="0" cy="0" rx="95" ry="115"/>
+    <!-- beard -->
+    <path d="M -55 35 C -55 90, -30 130, 0 130 C 30 130, 55 90, 55 35 Z" fill="#1a1130"/>
+    <!-- bald top suggestion (highlight) -->
+    <ellipse cx="0" cy="-65" rx="55" ry="32" fill="#2a2050" opacity="0.6"/>
+  </g>
+
+  <!-- Frame lines -->
+  <line x1="40" y1="40" x2="560" y2="40" stroke="#8e88c6" stroke-width="0.5" opacity="0.45"/>
+  <line x1="40" y1="760" x2="560" y2="760" stroke="#8e88c6" stroke-width="0.5" opacity="0.45"/>
+
+  <!-- "Symbolism" mark, top-left -->
+  <text x="40" y="68" fill="#a8a2d8" font-family="Georgia, serif" font-style="italic" font-size="13" letter-spacing="0.18em">— Symbolisme</text>
+
+  <!-- Initials watermark, large faded P V -->
+  <text x="300" y="720" fill="#8e88c6" opacity="0.15" font-family="Georgia, serif" font-size="280" font-weight="700" text-anchor="middle">PV</text>
+
+  <!-- Small line of poetry, bottom -->
+  <text x="300" y="730" fill="#d8d4ee" opacity="0.7" font-family="Georgia, serif" font-style="italic" font-size="14" text-anchor="middle">De la musique avant toute chose</text>
+
+  <!-- Subtle stars -->
+  <circle cx="80" cy="140" r="1.4" fill="#fff" opacity="0.8"/>
+  <circle cx="140" cy="80" r="1.0" fill="#fff" opacity="0.7"/>
+  <circle cx="520" cy="280" r="1.5" fill="#fff" opacity="0.85"/>
+  <circle cx="540" cy="60" r="1.2" fill="#fff" opacity="0.8"/>
+  <circle cx="100" cy="60" r="0.9" fill="#fff" opacity="0.6"/>
+  <circle cx="380" cy="100" r="1.0" fill="#fff" opacity="0.65"/>
+</svg>

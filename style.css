@@ -1,0 +1,549 @@
+/* =========================================================
+   Літературний календар 2026
+   ========================================================= */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* default theme — overridden per-slide */
+  --bg: #1a1815;
+  --bg-2: #0f0d0a;
+  --fg: #f3eee5;
+  --fg-dim: rgba(243, 238, 229, 0.62);
+  --fg-mute: rgba(243, 238, 229, 0.35);
+  --accent: #c9a36a;
+  --accent-2: #e0c890;
+  --rule: rgba(243, 238, 229, 0.18);
+}
+
+html, body {
+  height: 100%;
+  background: #08070a;
+  color: var(--fg);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* =========================================================
+   Slide deck — show one slide at a time
+   ========================================================= */
+
+#deck {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(255,255,255,0.05), transparent 60%),
+    radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.5), transparent 60%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s ease;
+  isolation: isolate;
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+/* Subtle film grain on every slide for cinematic feel */
+.slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>");
+}
+
+/* =========================================================
+   Cover slide
+   ========================================================= */
+
+.cover {
+  background: radial-gradient(ellipse at center, #1f1d18 0%, #0a0907 90%);
+}
+
+.cover__inner {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 60px;
+  padding: 6vh 7vw;
+  align-items: center;
+  position: relative;
+}
+
+.cover__line {
+  position: absolute;
+  top: 4vh;
+  left: 7vw;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  font-weight: 500;
+}
+
+.cover__title {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(62px, 8.5vw, 168px);
+  line-height: 0.94;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  grid-column: 1;
+}
+
+.cover__title-accent {
+  font-style: italic;
+  color: #c9a36a;
+}
+
+.cover__year {
+  position: absolute;
+  right: 7vw;
+  top: 4vh;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(120px, 18vw, 320px);
+  line-height: 0.85;
+  font-weight: 700;
+  color: rgba(201, 163, 106, 0.13);
+  letter-spacing: -0.04em;
+}
+
+.cover__sub {
+  grid-column: 1;
+  margin-top: 28px;
+  font-size: 17px;
+  color: var(--fg-dim);
+  max-width: 500px;
+  line-height: 1.55;
+  font-style: italic;
+}
+
+.cover__authors {
+  grid-column: 2;
+  list-style: none;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--fg-dim);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 36px;
+  align-self: end;
+  position: relative;
+  z-index: 2;
+}
+
+.cover__authors li {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  border-top: 1px solid var(--rule);
+  padding: 6px 0;
+}
+
+.cover__authors li span {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: #c9a36a;
+  font-size: 14px;
+  min-width: 38px;
+  letter-spacing: 0.05em;
+}
+
+.cover__hint {
+  position: absolute;
+  bottom: 5vh;
+  left: 7vw;
+  right: 7vw;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  border-top: 1px solid var(--rule);
+  padding-top: 16px;
+}
+
+/* =========================================================
+   Author slide layout
+   ========================================================= */
+
+.slide--author {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 60px 1fr 50px;
+}
+
+.slide__top {
+  grid-row: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 22px 7vw 10px;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  border-bottom: 1px solid var(--rule);
+  margin: 0 7vw;
+  padding: 22px 0 12px;
+}
+
+.slide__month {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--accent);
+  letter-spacing: 0.3em;
+}
+
+.slide__counter {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  color: var(--fg-dim);
+}
+
+.slide__counter b {
+  color: var(--fg);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.slide__body {
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 5vw;
+  padding: 4vh 7vw 0;
+  align-items: start;
+}
+
+/* Portrait */
+.portrait {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: var(--bg-2);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow:
+    0 30px 60px -20px rgba(0,0,0,0.55),
+    0 12px 24px -12px rgba(0,0,0,0.35);
+}
+
+.portrait img,
+.portrait svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  filter: contrast(1.05) brightness(0.92);
+}
+
+.portrait::before {
+  content: attr(data-caption);
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  right: 16px;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.62);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  z-index: 2;
+}
+
+.portrait::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.55));
+  pointer-events: none;
+}
+
+/* Right column — author content */
+.author {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.author__name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(48px, 6.2vw, 110px);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.author__name em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+}
+
+.author__years {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 18px;
+  color: var(--fg-dim);
+  margin-top: -8px;
+}
+
+.author__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 36px;
+  margin-top: 8px;
+}
+
+.author__block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.author__label {
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.author__value {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.author__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.author__list li {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: 15.5px;
+  line-height: 1.45;
+  color: var(--fg);
+  position: relative;
+  padding-left: 16px;
+}
+
+.author__list li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.author__block--full {
+  grid-column: 1 / -1;
+}
+
+/* Quote — bottom of slide */
+.slide__bottom {
+  grid-row: 3;
+  margin: 0 7vw;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide__quote {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--accent);
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+/* =========================================================
+   Per-month theme overrides
+   ========================================================= */
+
+[data-month="january"]   { --bg:#1a0d0d; --bg-2:#0a0505; --accent:#c9a36a; --accent-2:#e0c890; }
+[data-month="february"]  { --bg:#0e0e10; --bg-2:#050507; --accent:#c8333a; --accent-2:#e84e54; }
+[data-month="march"]     { --bg:#1e1635; --bg-2:#0a0518; --accent:#a8a2d8; --accent-2:#d8d4ee; }
+[data-month="april"]     { --bg:#0a1830; --bg-2:#040a18; --accent:#d4b96a; --accent-2:#e8d588; }
+[data-month="may"]       { --bg:#1a1a0d; --bg-2:#0a0a05; --accent:#d4a83a; --accent-2:#e8c25a; }
+[data-month="june"]      { --bg:#161616; --bg-2:#0a0a0a; --accent:#c8c2b6; --accent-2:#e8e2d6; }
+[data-month="july"]      { --bg:#181410; --bg-2:#0a0807; --accent:#a89878; --accent-2:#c8b890; }
+[data-month="august"]    { --bg:#0a0a0c; --bg-2:#050507; --accent:#f08a3a; --accent-2:#4ac4d8; }
+[data-month="september"] { --bg:#0a1f17; --bg-2:#040a08; --accent:#90c8a8; --accent-2:#e0d4b6; }
+[data-month="october"]   { --bg:#0a0805; --bg-2:#040302; --accent:#d4923a; --accent-2:#f0b46a; }
+[data-month="november"]  { --bg:#1a1a1c; --bg-2:#0a0a0c; --accent:#c8888c; --accent-2:#e8a8ac; }
+[data-month="december"]  { --bg:#1a1410; --bg-2:#0a0807; --accent:#c8a878; --accent-2:#e8c890; }
+
+/* =========================================================
+   Bottom navigation bar
+   ========================================================= */
+
+.navbar {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(20, 18, 14, 0.85);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  z-index: 100;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+}
+
+.nav-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.18s, border 0.18s;
+}
+
+.nav-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.counter {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.85);
+  min-width: 64px;
+  justify-content: center;
+}
+
+.counter .slash { margin: 0 4px; opacity: 0.4; }
+
+#cur { color: #fff; font-weight: 700; font-size: 15px; }
+
+.dots {
+  list-style: none;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.dots li {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  cursor: pointer;
+  transition: background 0.18s, transform 0.18s;
+}
+
+.dots li:hover { background: rgba(255,255,255,0.4); }
+
+.dots li.active {
+  background: #fff;
+  transform: scale(1.4);
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 980px) {
+  .slide--author {
+    grid-template-rows: 50px 1fr 44px;
+  }
+  .slide__body {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 2vh 5vw 0;
+  }
+  .portrait {
+    aspect-ratio: 3 / 2;
+    max-height: 220px;
+  }
+  .author__name { font-size: 38px; }
+  .author__grid { grid-template-columns: 1fr; gap: 16px; }
+  .cover__inner { grid-template-columns: 1fr; gap: 30px; padding: 6vh 5vw; }
+  .cover__authors { grid-column: 1; align-self: start; font-size: 14px; }
+}
+
+/* =========================================================
+   Print / PDF — one slide per page
+   ========================================================= */
+
+@media print {
+  @page {
+    size: 297mm 167mm; /* 16:9 landscape, A4-ish */
+    margin: 0;
+  }
+
+  html, body {
+    overflow: visible;
+    height: auto;
+    background: #fff;
+  }
+
+  #deck {
+    height: auto;
+    overflow: visible;
+  }
+
+  .slide {
+    position: relative;
+    inset: auto;
+    width: 297mm;
+    height: 167mm;
+    page-break-after: always;
+    opacity: 1 !important;
+    pointer-events: auto;
+    display: flex;
+  }
+
+  .slide.cover { display: flex; }
+
+  .navbar { display: none; }
+
+  .slide::after { display: none; }
+}
