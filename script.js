@@ -2,6 +2,61 @@
 
 const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII']
 
+const MONTH_NUM = {
+  january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+  july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+}
+
+const WEEKDAYS = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','НД']
+
+// ---------- Build a month-of-2026 calendar grid ----------
+function buildCalendarHTML(monthNum, birthDay) {
+  const year = 2026
+  const firstDay = new Date(year, monthNum - 1, 1)
+  // JS getDay(): 0=Sun..6=Sat. We want Mon=0..Sun=6.
+  const startOffset = (firstDay.getDay() + 6) % 7
+  const daysInMonth = new Date(year, monthNum, 0).getDate()
+
+  const cells = []
+  for (let i = 0; i < startOffset; i++) cells.push('<span class="cal__cell cal__cell--empty"></span>')
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isBirth = d === birthDay
+    const isWeekend = ((startOffset + d - 1) % 7) >= 5  // Sat (5) or Sun (6)
+    const cls = ['cal__cell', 'cal__day']
+    if (isWeekend) cls.push('cal__day--weekend')
+    if (isBirth) cls.push('cal__day--birth')
+    cells.push(`<span class="${cls.join(' ')}">${d}${
+      isBirth
+        ? `<svg class="cal__circle" viewBox="-30 -25 60 50" aria-hidden="true">
+             <ellipse cx="0" cy="-1" rx="22" ry="17" transform="rotate(-7)"
+                      stroke="var(--cal-circle, #d62828)" stroke-width="2.6"
+                      fill="none" stroke-linecap="round"/>
+             <ellipse cx="1" cy="0" rx="20" ry="15.5" transform="rotate(-12)"
+                      stroke="var(--cal-circle, #d62828)" stroke-width="1.6"
+                      fill="none" stroke-linecap="round" opacity="0.65"/>
+           </svg>`
+        : ''
+    }</span>`)
+  }
+
+  // Pad to a full 6×7 grid so spacing is consistent
+  while (cells.length < 42) cells.push('<span class="cal__cell cal__cell--empty"></span>')
+
+  return `
+    <div class="calendar">
+      <div class="cal__header">
+        <span class="cal__year">2026</span>
+        <span class="cal__month-name"></span>
+      </div>
+      <div class="cal__weekdays">
+        ${WEEKDAYS.map((w, i) => `<span class="cal__weekday${i >= 5 ? ' cal__weekday--weekend' : ''}">${w}</span>`).join('')}
+      </div>
+      <div class="cal__grid">
+        ${cells.join('')}
+      </div>
+    </div>`
+}
+
 // ---------- Build author slides from window.AUTHORS ----------
 const deck = document.getElementById('deck')
 
@@ -15,6 +70,9 @@ window.AUTHORS.forEach((a, idx) => {
   const initials = parts.slice(0, parts.length - 1).join(' ')
   const surname = parts[parts.length - 1]
 
+  const monthNum = MONTH_NUM[a.monthSlug]
+  const calendarHTML = buildCalendarHTML(monthNum, a.birthDay)
+
   slide.innerHTML = `
     <div class="slide__top">
       <div class="slide__month">${a.month} · ${ROMAN[idx]}</div>
@@ -22,10 +80,13 @@ window.AUTHORS.forEach((a, idx) => {
     </div>
 
     <div class="slide__body">
-      <div class="portrait" data-caption="${a.fullName}">
-        ${a.photo.endsWith('.svg')
-          ? `<object type="image/svg+xml" data="${a.photo}" aria-label="${a.fullName}"></object>`
-          : `<img src="${a.photo}" alt="${a.fullName}" loading="lazy">`}
+      <div class="slide__left">
+        <div class="portrait" data-caption="${a.fullName}">
+          ${a.photo.endsWith('.svg')
+            ? `<object type="image/svg+xml" data="${a.photo}" aria-label="${a.fullName}"></object>`
+            : `<img src="${a.photo}" alt="${a.fullName}" loading="lazy">`}
+        </div>
+        ${calendarHTML}
       </div>
 
       <div class="author">
@@ -63,7 +124,10 @@ window.AUTHORS.forEach((a, idx) => {
       <div class="slide__quote">${a.quote}</div>
     </div>
   `
+
+  // Set the month name inside the calendar header (we built it before knowing context)
   deck.appendChild(slide)
+  slide.querySelector('.cal__month-name').textContent = a.month
 })
 
 // ---------- Slide navigation ----------
@@ -75,7 +139,6 @@ const totEl = document.getElementById('tot')
 
 totEl.textContent = String(total).padStart(2, '0')
 
-// Build dot navigation
 slides.forEach((_, i) => {
   const dot = document.createElement('li')
   dot.dataset.idx = i
@@ -94,7 +157,6 @@ function goTo(i) {
   slides[current].classList.add('active')
   dotsEl.children[current].classList.add('active')
   curEl.textContent = String(current + 1).padStart(2, '0')
-  // Sync browser's CSS variables with the slide's theme so navbar etc. don't fight it (optional)
   document.documentElement.dataset.month = slides[current].dataset.month
 }
 
@@ -124,7 +186,6 @@ document.addEventListener('keydown', (e) => {
   }
 })
 
-// Click anywhere on the slide (except links / buttons) to advance
 deck.addEventListener('click', (e) => {
   if (e.target.closest('a, button, .navbar')) return
   next()
@@ -139,12 +200,10 @@ function toggleFullscreen() {
 }
 document.getElementById('fs').addEventListener('click', toggleFullscreen)
 
-// ---------- Initial state ----------
 slides[0].classList.add('active')
 dotsEl.children[0].classList.add('active')
 document.documentElement.dataset.month = 'cover'
 
-// Restore index from URL hash if present (e.g. #5 jumps to slide 5)
 function readHash() {
   const m = location.hash.match(/#(\d+)/)
   if (m) goTo(Math.max(0, Math.min(total - 1, parseInt(m[1], 10) - 1)))
