@@ -60,6 +60,24 @@ function buildCalendarHTML(monthNum, birthDay) {
 // ---------- Build author slides from window.AUTHORS ----------
 const deck = document.getElementById('deck')
 
+// ---------- Inject a 4×3 portrait grid as the cover's backdrop ----------
+;(() => {
+  const cover = deck.querySelector('.cover')
+  if (!cover) return
+  const backdrop = document.createElement('div')
+  backdrop.className = 'cover__backdrop'
+  backdrop.innerHTML = window.AUTHORS.map((a, i) => `
+    <div class="cover__bdcell" style="background-image:url('${a.photo}');animation-delay:${(i * 0.18).toFixed(2)}s">
+      <span class="cover__bdcell-name">${a.name}</span>
+    </div>
+  `).join('')
+  const overlay = document.createElement('div')
+  overlay.className = 'cover__overlay'
+  // Insert behind .cover__inner (which is first child)
+  cover.prepend(overlay)
+  cover.prepend(backdrop)
+})()
+
 window.AUTHORS.forEach((a, idx) => {
   const slide = document.createElement('section')
   slide.className = 'slide slide--author'

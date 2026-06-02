@@ -74,6 +74,98 @@ html, body {
 
 .cover {
   background: radial-gradient(ellipse at center, #1f1d18 0%, #0a0907 90%);
+  position: relative;
+  isolation: isolate;
+}
+
+/* ---------- Cover backdrop: 4×3 grid of all author portraits ---------- */
+.cover__backdrop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cover__bdcell {
+  position: relative;
+  background-size: cover;
+  background-position: center 20%;
+  background-repeat: no-repeat;
+  filter:
+    grayscale(0.55)
+    sepia(0.22)
+    brightness(0.42)
+    contrast(1.05);
+  animation: bdFloat 22s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes bdFloat {
+  0%, 100% { transform: scale(1) translate3d(0, 0, 0); filter: grayscale(0.55) sepia(0.22) brightness(0.42) contrast(1.05); }
+  50%      { transform: scale(1.05) translate3d(0, -4px, 0); filter: grayscale(0.4) sepia(0.18) brightness(0.55) contrast(1.05); }
+}
+
+/* Tiny name plate at the bottom of each portrait — surfaces on hover-ish moments */
+.cover__bdcell-name {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(243, 238, 229, 0.55);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+/* Vignette + radial overlay so the title remains the focal point */
+.cover__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 65% at 50% 50%, rgba(10, 9, 7, 0.62) 0%, rgba(10, 9, 7, 0.86) 60%, rgba(10, 9, 7, 0.95) 100%),
+    linear-gradient(180deg, rgba(10, 9, 7, 0.55), rgba(10, 9, 7, 0.55));
+}
+
+.cover .cover__inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* Bring the giant "2026" closer to gold so it sits as decoration on top of the grid */
+.cover .cover__year {
+  z-index: 3;
+  color: rgba(201, 163, 106, 0.22);
+  mix-blend-mode: screen;
+}
+
+/* Subtle paper crease lines across the grid (vintage poster feel) */
+.cover__backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent calc(25% - 0.5px), rgba(201, 163, 106, 0.18) 25%, transparent calc(25% + 0.5px)),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(201, 163, 106, 0.18) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(90deg, transparent calc(75% - 0.5px), rgba(201, 163, 106, 0.18) 75%, transparent calc(75% + 0.5px)),
+    linear-gradient(0deg, transparent calc(33.33% - 0.5px), rgba(201, 163, 106, 0.18) 33.33%, transparent calc(33.33% + 0.5px)),
+    linear-gradient(0deg, transparent calc(66.66% - 0.5px), rgba(201, 163, 106, 0.18) 66.66%, transparent calc(66.66% + 0.5px));
+}
+
+@media (max-width: 720px) {
+  .cover__backdrop {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+  }
+  .cover__bdcell-name { font-size: 9px; left: 6px; bottom: 6px; }
 }
 
 .cover__inner {
